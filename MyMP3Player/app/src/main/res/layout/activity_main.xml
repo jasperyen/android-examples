@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="lab.android.mymp3player.MainActivity">
+
+    <Button
+        android:text="@string/pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pause"
+        android:layout_alignBaseline="@+id/stop"
+        android:layout_alignBottom="@+id/stop"
+        android:layout_toStartOf="@+id/play" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/TimeBar"
+        android:layout_marginBottom="44dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="@string/loud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="32dp"
+        android:id="@+id/loud" />
+
+    <Button
+        android:text="@string/file"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/file"
+        android:layout_alignBaseline="@+id/loud"
+        android:layout_alignBottom="@+id/loud"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="@string/raw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/raw"
+        android:layout_marginTop="45dp"
+        android:layout_below="@+id/file"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="@string/whispered"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/raw"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/whispered" />
+
+    <Button
+        android:text="@string/play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/play"
+        android:layout_above="@+id/pause"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:text="@string/stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/stop"
+        android:layout_above="@+id/TimeBar"
+        android:layout_toEndOf="@+id/play"
+        android:layout_marginBottom="20dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/soundName" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/timtxt"
+        android:layout_below="@+id/pause"
+        android:layout_alignParentEnd="true"
+        android:text="00:00" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/soundName"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/songname" />
+
+</RelativeLayout>

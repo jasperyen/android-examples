@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MyMP3Player</string>
+    <string name="play">播放</string>
+    <string name="stop">停止</string>
+    <string name="pause">暫停</string>
+    <string name="loud">音量+</string>
+    <string name="whispered">音量-</string>
+    <string name="file">檔案</string>
+    <string name="raw">raw</string>
+</resources>

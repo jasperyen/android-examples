@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+    <script>
+
+		var map, directionsService, directionsDisplay;
+
+		var MAX_POK = 10;
+		var MAX_POK_INDEX = 3;
+
+		var lat = 25.0673666, lng = 121.5212688;
+
+		var pokArray = new Array(MAX_POK);
+		var pokImage = new Array('pok01.png', 'pok02.png', 'pok03.png');
+		var pokName = new Array('皮卡丘', '小火龍', '傑尼龜');
+		var pokTimeout = new Array(5, 10, 15);
+
+		function initMap() {
+			directionsService = new google.maps.DirectionsService;
+			directionsDisplay = new google.maps.DirectionsRenderer;
+			map = new google.maps.Map(document.getElementById('map'), {
+				center: {lat: 25.0673666, lng: 121.5212688},
+				zoom: 15
+			});
+
+			var image = 'nowicon.png';
+			var nowpos = new google.maps.Marker({
+				position : {lat: 25.0673666, lng: 121.5212688},
+				title : "Now position",
+				icon : image,
+				map : map
+			});
+
+			var nowcir = new google.maps.Circle({
+			  strokeColor: '#FF0000',
+			  strokeOpacity: 0.6,
+			  strokeWeight: 1,
+			  fillColor: '#FF0000',
+			  fillOpacity: 0.1,
+			  map: map,
+			  center: {lat: 25.0673666, lng: 121.5212688},
+			  radius: 100
+			});
+
+			for (var i = 0; i < MAX_POK; i++ ) {
+				pokArray[i] = new google.maps.Marker({
+					position : {lat: 25.0673666, lng: 121.5212688},
+					title : "pok No." + i,
+					map : map,
+					id : i,
+					pokNo : 0,
+					time : 0,
+					infowindow : new google.maps.InfoWindow({ content: "" })
+				});
+
+				pokArray[i].addListener('click', function(event) {
+					var i = this.id
+					var pokPos = pokArray[i].getPosition();
+					var timeout = (new Date().getTime() - this.time) / 1000;
+
+					if (pokTimeout[this.pokNo] < timeout)
+						return;
+
+					var dis = getDistance(
+						new google.maps.LatLng(lat, lng), pokPos
+					);
+
+					var contentStr = "<h3 align=\"center\">" + pokName[this.pokNo] + "</h3>\n" +
+								 "<p align=\"center\">再 " + Math.floor(pokTimeout[this.pokNo] - timeout) + " 秒就要逃跑了!</p>\n";
+
+
+					if (dis <= 100) {
+						contentStr += "<p align=\"center\">距離剛好很近, 要不要抓他?</p>\n" +
+									"<button style=\"display: block; margin: 0 auto;\" onclick=\'catchPok("+ this.pokNo +")\'>Catch !</button>\n";
+
+					}
+					else {
+						contentStr += "<p align=\"center\">距離太遠了, 要不要規劃路徑?</p>\n" +
+									"<button style=\"display: block; margin: 0 auto;\" onclick=\'calcRoute("+ i +")\'>規劃 !</button>\n";
+					}
+
+					var infowindow = new google.maps.InfoWindow({
+						content: contentStr
+					});
+
+					infowindow.open(this.map, this);
+
+					this.infowindow = infowindow;
+				});
+			}
+
+
+			var lat1 = 10, lat2 = 30;
+			var lng1 = 110, lng2 = 130;
+			var rectangle = new google.maps.Polygon({
+				paths : [
+					new google.maps.LatLng(lat1, lng1),
+					new google.maps.LatLng(lat2, lng1),
+					new google.maps.LatLng(lat2, lng2),
+					new google.maps.LatLng(lat1, lng2)
+				],
+				strokeOpacity: 0,
+				fillOpacity : 0,
+				map : map
+			});
+
+			rectangle.addListener('click', function(event) {
+				lat = event.latLng.lat();
+				lng = event.latLng.lng();
+
+				console.log(lat + ' , ' + lng );
+
+				nowpos.setPosition(event.latLng);
+				nowcir.setCenter(event.latLng);
+
+				randPok();
+				directionsDisplay.setMap(null);
+			});
+
+		}
+
+		function catchPok (index) {
+			if(JsInterface)
+				JsInterface.catchPok(index);
+		}
+
+		function calcRoute(index){
+			var start = lat + ', ' + lng;
+			var end = pokArray[index].getPosition().lat() + ', ' +
+						pokArray[index].getPosition().lng();
+
+			directionsDisplay.setMap(map);
+			directionsService.route({
+				origin: start,
+				destination: end,
+				travelMode: 'WALKING'
+				},
+				function(response, status) {
+					if (status === google.maps.DirectionsStatus.OK) {
+						directionsDisplay.setDirections(response);
+					}
+					else {
+						alert('Directions request failed due to ' + status);
+					}
+				}
+			);
+		}
+
+		function randPok() {
+			var time = new Date().getTime();
+			for (var i = 0; i < MAX_POK; i++) {
+				var timeout = (time - pokArray[i].time) / 1000;
+				//console.log('pokid : ' + i + ' pokNo : ' + pokArray[i].pokNo + ' timeout is ' + timeout);
+
+				var latlng, pokNo, pokPos;
+
+				if (timeout > pokTimeout[pokArray[i].pokNo]){
+					pokArray[i].infowindow.close();
+
+					var pokNo = Math.floor(Math.random() * MAX_POK_INDEX);
+
+					pokArray[i].set('pokNo', pokNo);
+					pokArray[i].set('time', time);
+					pokArray[i].setIcon( pokImage[pokNo] );
+
+
+					latlng = new google.maps.LatLng(
+						(Math.random() - 0.5) * 0.005 + lat,
+						(Math.random() - 0.5) * 0.005 + lng
+					);
+				}
+				else {
+					pokPos = pokArray[i].getPosition();
+					latlng = new google.maps.LatLng(
+						(Math.random() - 0.5) * 0.0001 + pokPos.lat(),
+						(Math.random() - 0.5) * 0.0001 + pokPos.lng()
+					);
+				}
+				pokArray[i].setPosition(latlng);
+			}
+		}
+
+		var rad = function(x) {
+		  return x * Math.PI / 180;
+		};
+
+		var getDistance = function(p1, p2) {
+		  var R = 6378137; // Earth’s mean radius in meter
+		  var dLat = rad(p2.lat() - p1.lat());
+		  var dLong = rad(p2.lng() - p1.lng());
+		  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) *
+			Math.sin(dLong / 2) * Math.sin(dLong / 2);
+		  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		  var d = R * c;
+		  return d; // returns the distance in meter
+		};
+
+	</script>
+    <script
+            async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsIounZbhWreS9StJyp0wygE5cxsDhDOo&callback=initMap">
+    </script>
+</head>
+<body>
+<div id="map"></div>
+</body>
+</html>

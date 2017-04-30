@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+	<script>
+		var map, directionsService, directionsDisplay;
+		function initMap() {
+			directionsService = new google.maps.DirectionsService;
+			directionsDisplay = new google.maps.DirectionsRenderer;
+			map = new google.maps.Map(document.getElementById('map'), {
+				center: {lat: 25.0673666, lng: 121.5212688},
+				zoom: 15
+			});
+			directionsDisplay.setMap(map);
+		}
+		
+		function calcRoute(){
+			var selectedMode = document.getElementById('mode').value;
+			directionsService.route({
+				origin: document.getElementById('start').value,
+				destination: document.getElementById('goal').value,
+				travelMode: google.maps.TravelMode[selectedMode]
+				}, 
+				function(response, status) {
+					if (status === google.maps.DirectionsStatus.OK) {
+						directionsDisplay.setDirections(response);
+					}
+					else {
+						window.alert('Directions request failed due to ' + status);
+					}
+				}
+			);
+		}
+	</script>
+	<script
+		async defer
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsIounZbhWreS9StJyp0wygE5cxsDhDOo&callback=initMap">
+	</script>
+</head>
+<body>
+	<div style = "text-align:center"> 
+		<b>起點 : </b>
+		<input type = "text" id = "start" value = "">
+		<br>
+		<b>想去的地方 : </b>
+		<input type = "text" id = "goal" value = "">
+		<br>
+		<b>交通工具 : </b>
+		<select id="mode">
+			<option value="DRIVING">開車</option>
+			<option value="WALKING">步行</option>
+			<option value="BICYCLING">單車</option>
+			<option value="TRANSIT">大眾運輸</option>
+		</select>
+		<input type = "submit" onclick = "calcRoute()">
+	</div>
+	<div id="map"></div>
+
+</body>
+</html>
